@@ -5,6 +5,7 @@ var concat 				= require('gulp-concat');
 var minifyCSS			= require('gulp-minify-css');
 var autoprefixer	= require('gulp-autoprefixer');
 var plumber				= require('gulp-plumber');
+var sourcemaps		=require('gulp-sourcemaps');
 //file paths
 var DIST_PATH			= 'public/dist';
 var SCRIPTS_PATH 	= 'public/scripts/**/*.js';
@@ -19,11 +20,13 @@ gulp.task('styles', function () {
 			console.log(err);
 			this.emit('end');
 		}))
+		.pipe(sourcemaps.init())
 		.pipe(autoprefixer({
 			browsers: ['last 2 versions', 'ie 8']
 		}))
 		.pipe(concat('styles.css'))
 		.pipe(minifyCSS())
+		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(DIST_PATH))
 		.pipe(livereload());
 });
