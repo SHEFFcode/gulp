@@ -1,29 +1,34 @@
-var gulp 					= require('gulp');
-var uglify 				= require('gulp-uglify');
-var livereload 		= require('gulp-livereload');
-var concat 				= require('gulp-concat');
-var minifyCSS			= require('gulp-minify-css');
-var autoprefixer	= require('gulp-autoprefixer');
-var plumber				= require('gulp-plumber');
-var sourcemaps		= require('gulp-sourcemaps');
-var sass 					= require('gulp-sass');
+var gulp 										= require('gulp');
+var uglify 									= require('gulp-uglify');
+var livereload 							= require('gulp-livereload');
+var concat 									= require('gulp-concat');
+var minifyCSS								= require('gulp-minify-css');
+var autoprefixer						= require('gulp-autoprefixer');
+var plumber									= require('gulp-plumber');
+var sourcemaps							= require('gulp-sourcemaps');
+var sass 										= require('gulp-sass');
 //less plugins
-var less					= require('gulp-less');
-var LessAutoprefix= require('less-plugin-autoprefix');
+var less										= require('gulp-less');
+var LessAutoprefix					= require('less-plugin-autoprefix');
 //babel
-var babel					= require('gulp-babel');
+var babel										= require('gulp-babel');
 //handlebars plugins
-var handlebars		= require('gulp-handlebars');
-var handlebarsLib	= require('handlebars');
-var declare				= require('gulp-declare');
-var wrap					= require('gulp-wrap');
+var handlebars							= require('gulp-handlebars');
+var handlebarsLib						= require('handlebars');
+var declare									= require('gulp-declare');
+var wrap										= require('gulp-wrap');
+//Image Compression
+var imagemin								= require('gulp-imagemin');
+var imageminPngQuant 				= require('imagemin-pngquant');
+var imageminJpegRecompress 	= require('imagemin-jpeg-recompress');
 //file paths
-var DIST_PATH			= 'public/dist';
-var SCRIPTS_PATH 	= 'public/scripts/**/*.js';
-var CSS_PATH 			= 'public/css/**/*.css';
-var TEMPLATES_PATH= 'templates/**/*.hbs';
+var DIST_PATH				= 'public/dist';
+var SCRIPTS_PATH 		= 'public/scripts/**/*.js';
+var CSS_PATH 				= 'public/css/**/*.css';
+var TEMPLATES_PATH	= 'templates/**/*.hbs';
+var IMAGES_PATH			= 'public/images/**/*.{png, jpeg, jpg, svg, gif}';
 //init calls
-var lessAutoprefix= new LessAutoprefix({
+var lessAutoprefix = new LessAutoprefix({
 	browsers: ['last 2 versions']
 });
 
@@ -106,6 +111,16 @@ gulp.task('scripts', function () {
 //images
 gulp.task('images', function () {
 	console.log('starting images task');
+	return gulp.src(IMAGES_PATH)
+		.pipe(imagemin([
+			imagemin.gifsicle(),
+			imagemin.jpegtran(),
+			imagemin.optipng(),
+			imagemin.svgo(),
+			imageminPngQuant(),
+			imageminJpegRecompress()
+		]))
+		pipe(gulp.dest(DIST_PATH + '/images'))
 });
 //templates
 gulp.task('templates', function () {
@@ -125,9 +140,8 @@ gulp.task('templates', function () {
 //default
 gulp.task('default', ['images', 'templates', 'styles', 'scripts'], function () {
 	console.log('default task ran');
-
 });
-
+//watch
 gulp.task('watch', ['default'], function () {
 	console.log('running watch task');
 	require('./server.js');
