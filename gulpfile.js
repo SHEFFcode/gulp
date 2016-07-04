@@ -7,6 +7,12 @@ var autoprefixer	= require('gulp-autoprefixer');
 var plumber				= require('gulp-plumber');
 var sourcemaps		= require('gulp-sourcemaps');
 var sass 					= require('gulp-sass');
+//less plugins
+var less					= require('gulp-less');
+var LessAutoprefix= require('less-plugin-autoprefix');
+var lessAutoprefix= new LessAutoprefix({
+	browsers: ['last 2 versions']
+});
 //file paths
 var DIST_PATH			= 'public/dist';
 var SCRIPTS_PATH 	= 'public/scripts/**/*.js';
@@ -31,22 +37,40 @@ var CSS_PATH 			= 'public/css/**/*.css'
 // 		.pipe(gulp.dest(DIST_PATH))
 // 		.pipe(livereload());
 // });
-//styles for scss
+// //styles for scss
+// gulp.task('styles', function () {
+// 	console.log('starting styles task');
+// 	return gulp.src('public/scss/styles.scss')
+// 		.pipe(plumber(function (err) {
+// 			console.log('Styles task error');
+// 			console.log(err);
+// 			this.emit('end');
+// 		}))
+// 		.pipe(sourcemaps.init())
+// 		.pipe(autoprefixer({
+// 			browsers: ['last 2 versions', 'ie 8']
+// 		}))
+// 		.pipe(sass({
+// 			outputStyle: 'compressed'
+// 		}))
+// 		.pipe(sourcemaps.write())
+// 		.pipe(gulp.dest(DIST_PATH))
+// 		.pipe(livereload());
+// });
+//styles for less
 gulp.task('styles', function () {
 	console.log('starting styles task');
-	return gulp.src('public/scss/styles.scss')
+	return gulp.src('public/less/styles.less')
 		.pipe(plumber(function (err) {
 			console.log('Styles task error');
 			console.log(err);
 			this.emit('end');
 		}))
 		.pipe(sourcemaps.init())
-		.pipe(autoprefixer({
-			browsers: ['last 2 versions', 'ie 8']
+		.pipe(less({
+			plugins: [lessAutoprefix]
 		}))
-		.pipe(sass({
-			outputStyle: 'compressed'
-		}))
+		.pipe(minifyCSS())
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(DIST_PATH))
 		.pipe(livereload());
@@ -54,7 +78,6 @@ gulp.task('styles', function () {
 //scripts
 gulp.task('scripts', function () {
 	console.log('starting srcipts task');
-
 	return gulp.src(['public/css/reset.css', CSS_PATH])
 		.pipe(uglify())
 		.pipe(gulp.dest(DIST_PATH))
@@ -75,5 +98,6 @@ gulp.task('watch', function () {
 	livereload.listen();
 	gulp.watch(SCRIPTS_PATH, ['scripts']);
 	// gulp.watch(CSS_PATH, ['styles']);
-	gulp.watch('public/scss/**/*.scss', ['styles']);
+	// gulp.watch('public/scss/**/*.scss', ['styles']);
+	gulp.watch('public/less/**/*.less', ['styles']);
 });
