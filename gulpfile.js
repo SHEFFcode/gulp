@@ -35,7 +35,6 @@ var IMAGES_PATH			= 'public/images/**/*.{png, jpeg, jpg, svg, gif}';
 var lessAutoprefix = new LessAutoprefix({
 	browsers: ['last 2 versions']
 });
-
 // //styles - no scss
 // gulp.task('styles', function () {
 // 	console.log('starting styles task');
