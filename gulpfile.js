@@ -123,11 +123,12 @@ gulp.task('templates', function () {
 		.pipe(livereload());
 });
 //default
-gulp.task('default', function () {
+gulp.task('default', ['images', 'templates', 'styles', 'scripts'], function () {
 	console.log('default task ran');
+
 });
 
-gulp.task('watch', function () {
+gulp.task('watch', ['default'], function () {
 	console.log('running watch task');
 	require('./server.js');
 	livereload.listen();
