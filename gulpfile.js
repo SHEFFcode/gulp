@@ -10,13 +10,16 @@ var sass 					= require('gulp-sass');
 //less plugins
 var less					= require('gulp-less');
 var LessAutoprefix= require('less-plugin-autoprefix');
-var lessAutoprefix= new LessAutoprefix({
-	browsers: ['last 2 versions']
-});
+//babel
+var babel					= require('gulp-babel');
 //file paths
 var DIST_PATH			= 'public/dist';
 var SCRIPTS_PATH 	= 'public/scripts/**/*.js';
 var CSS_PATH 			= 'public/css/**/*.css'
+//init calls
+var lessAutoprefix= new LessAutoprefix({
+	browsers: ['last 2 versions']
+});
 
 // //styles - no scss
 // gulp.task('styles', function () {
@@ -78,8 +81,19 @@ gulp.task('styles', function () {
 //scripts
 gulp.task('scripts', function () {
 	console.log('starting srcipts task');
-	return gulp.src(['public/css/reset.css', CSS_PATH])
+	return gulp.src([SCRIPTS_PATH])
+		.pipe(plumber(function (err) {
+			console.log('Scripts task error');
+			console.log(err);
+			this.emit('end');
+		}))
+		.pipe(sourcemaps.init())
+		.pipe(babel({
+			presets: ['es2015']
+		}))
 		.pipe(uglify())
+		.pipe(concat('scripts.js'))
+		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(DIST_PATH))
 		.pipe(livereload());
 });
