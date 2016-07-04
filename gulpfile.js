@@ -21,6 +21,8 @@ var wrap										= require('gulp-wrap');
 var imagemin								= require('gulp-imagemin');
 var imageminPngQuant 				= require('imagemin-pngquant');
 var imageminJpegRecompress 	= require('imagemin-jpeg-recompress');
+//deleting files
+var del								= require('del');
 //file paths
 var DIST_PATH				= 'public/dist';
 var SCRIPTS_PATH 		= 'public/scripts/**/*.js';
@@ -137,8 +139,14 @@ gulp.task('templates', function () {
 		.pipe(gulp.dest(DIST_PATH))
 		.pipe(livereload());
 });
+//deleting
+gulp.task('clean', function () {
+	return del.sync([
+		DIST_PATH
+	]);
+});
 //default
-gulp.task('default', ['images', 'templates', 'styles', 'scripts'], function () {
+gulp.task('default', ['clean', 'images', 'templates', 'styles', 'scripts'], function () {
 	console.log('default task ran');
 });
 //watch
