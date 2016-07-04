@@ -12,10 +12,16 @@ var less					= require('gulp-less');
 var LessAutoprefix= require('less-plugin-autoprefix');
 //babel
 var babel					= require('gulp-babel');
+//handlebars plugins
+var handlebars		= require('gulp-handlebars');
+var handlebarsLib	= require('handlebars');
+var declare				= require('gulp-declare');
+var wrap					= require('gulp-wrap');
 //file paths
 var DIST_PATH			= 'public/dist';
 var SCRIPTS_PATH 	= 'public/scripts/**/*.js';
-var CSS_PATH 			= 'public/css/**/*.css'
+var CSS_PATH 			= 'public/css/**/*.css';
+var TEMPLATES_PATH= 'templates/**/*.hbs';
 //init calls
 var lessAutoprefix= new LessAutoprefix({
 	browsers: ['last 2 versions']
@@ -101,6 +107,21 @@ gulp.task('scripts', function () {
 gulp.task('images', function () {
 	console.log('starting images task');
 });
+//templates
+gulp.task('templates', function () {
+	return gulp.src(TEMPLATES_PATH)
+		.pipe(handlebars({
+			handlebars: handlebarsLib
+		}))
+		.pipe(wrap('Handlebars.template(<%= contents %>)'))
+		.pipe(declare({
+			namespace: 'templates',
+			noRedeclare: true
+		}))
+		.pipe(concat('templates.js'))
+		.pipe(gulp.dest(DIST_PATH))
+		.pipe(livereload());
+});
 //default
 gulp.task('default', function () {
 	console.log('default task ran');
@@ -114,4 +135,5 @@ gulp.task('watch', function () {
 	// gulp.watch(CSS_PATH, ['styles']);
 	// gulp.watch('public/scss/**/*.scss', ['styles']);
 	gulp.watch('public/less/**/*.less', ['styles']);
+	gulp.watch(TEMPLATES_PATH, ['templates']);
 });
